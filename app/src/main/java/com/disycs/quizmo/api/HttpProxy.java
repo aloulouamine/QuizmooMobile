@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,11 +23,10 @@ import android.util.Log;
 import com.disycs.quizmo.model.Questionnaire;
 import com.disycs.quizmo.model.Questionnaire.CATEGORY;
 import com.disycs.quizmo.model.Questionnaire.STATE;
-import com.disycs.quizmo.model.Token;
-import com.disycs.quizmo.model.User;
+
 
 public class HttpProxy {
-    public static void Authentification(String userName, String password) {
+    public static String Authentification(String userName, String password) {
 
         try {
             ArrayList<NameValuePair> httpBody = new ArrayList<NameValuePair>();
@@ -56,9 +54,9 @@ public class HttpProxy {
                 JSONObject jUser = jObject.getJSONObject("user");
                 JSONObject jToken = jObject.getJSONObject("token");
                 JSONObject jExpire = jToken.getJSONObject("Expires");
-                User.setUser(jUser.getString("username"), password);
+
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss");
-                Token.setToken(jToken.getString("Token"), df.parse(jExpire.getString("date")), jExpire.getInt("timezone_type"), jExpire.getString("timezone"));
+                return jToken.getString("Token");
 
             } else {
                 Log.i("Exception", "Authentification Failed from http");
@@ -67,9 +65,10 @@ public class HttpProxy {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public static ArrayList<Questionnaire> getQuestionnaires(Token token, STATE state) {
+    public static ArrayList<Questionnaire> getQuestionnaires(String token, STATE state) {
         ArrayList<Questionnaire> questions = new ArrayList<Questionnaire>();
         try {
             HttpClient httpClient = new DefaultHttpClient();
@@ -77,7 +76,7 @@ public class HttpProxy {
 
             // API does not implement pagination yet ...
             HttpGet httpGet = new HttpGet(ApiURL.questAPI(state, CATEGORY.ALL, 1));
-            httpGet.addHeader("x-quizmoo-access-token", Token.getToken().getTokenString());
+            httpGet.addHeader("x-quizmoo-access-token", token);
             HttpResponse httpResponse = httpClient.execute(httpGet);
             if (httpResponse.getStatusLine().getStatusCode() == 200) {
                 HttpEntity httpEntity = httpResponse.getEntity();
@@ -105,8 +104,8 @@ public class HttpProxy {
                             jQuestion.getString("hash"),
                             state,
                             CATEGORY.get(jQuestion.getString("category")),
-                            getQuestions(jQuestion.getInt("id")
-                            )));
+                            getQuestions(jQuestion.getInt("id"),token)
+                            ));
                 }
             }
             else if(httpResponse.getStatusLine().getStatusCode()==403){
@@ -120,12 +119,12 @@ public class HttpProxy {
         return questions;
     }
 
-    private static String getQuestions(int id) {
+    private static String getQuestions(int id, String token) {
         String thumbnail = "";
         try {
             HttpClient httpClient = new DefaultHttpClient();
             HttpGet httpGet = new HttpGet(ApiURL.QuestDetailAPI(id));
-            httpGet.addHeader("x-quizmoo-access-token", Token.getToken().getTokenString());
+            httpGet.addHeader("x-quizmoo-access-token", token);
             HttpResponse httpResponse = httpClient.execute(httpGet);
             if (httpResponse.getStatusLine().getStatusCode() == 200) {
                 HttpEntity httpEntity = httpResponse.getEntity();

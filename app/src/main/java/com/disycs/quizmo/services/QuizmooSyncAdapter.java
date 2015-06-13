@@ -2,6 +2,8 @@ package com.disycs.quizmo.services;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -11,24 +13,21 @@ import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.disycs.quizmo.QuestionnairesActivity;
 import com.disycs.quizmo.R;
 import com.disycs.quizmo.api.HttpProxy;
 import com.disycs.quizmo.database.QuizmooContentProvider;
 import com.disycs.quizmo.database.tables.QuestionnaireTable;
 import com.disycs.quizmo.model.Questionnaire;
-import com.disycs.quizmo.model.Token;
-import com.disycs.quizmo.model.questions.Question;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
 
 public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
-    public final String LOG_TAG = QuizmooSyncAdapter.class.getSimpleName();
+    public static final String LOG_TAG = QuizmooSyncAdapter.class.getSimpleName();
     // Interval at which to sync with the API, in milliseconds.
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 180;
@@ -39,7 +38,15 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
-
+        try {
+            mAccountManager.getAuthToken(account,authority,null,null,null,null).getResult();
+        } catch (OperationCanceledException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticatorException e) {
+            e.printStackTrace();
+        }
         String  token  = mAccountManager.peekAuthToken(account,authority);
 
         Log.v(LOG_TAG,"account name sync : "+account.name);
@@ -50,7 +57,7 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
 
         for(Questionnaire.STATE state : Questionnaire.STATE.values()){
 
-            ArrayList<Questionnaire> questionnaireList = HttpProxy.getQuestionnaires(Token.getToken(), state);
+            ArrayList<Questionnaire> questionnaireList = HttpProxy.getQuestionnaires(token, state);
             Vector<ContentValues> cVVector = new Vector<ContentValues>(questionnaireList.size());
             for (Questionnaire questionnaire : questionnaireList) {
                 ContentValues questionnaireContentValues = new ContentValues();
@@ -68,12 +75,12 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
                 ContentValues[] cVArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cVArray);
                 getContext().getContentResolver().bulkInsert(QuizmooContentProvider.QUESTIONNAIRE_CONTENT_URI, cVArray);
-                getContext().getContentResolver().notifyChange(QuizmooContentProvider.QUESTIONNAIRE_CONTENT_URI,null);
+
             }
 
         }
 
-
+        getContext().getContentResolver().notifyChange(QuizmooContentProvider.QUESTIONNAIRE_CONTENT_URI,null);
     }
 
 
@@ -123,6 +130,29 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
                 "com.disycs", bundle);
     }
 
+    private static void onAccountCreated(Account newAccount, Context context) {
+        /*
+         * Since we've created an account
+         */
+        QuizmooSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+
+        /*
+         * Without calling setSyncAutomatically, our periodic sync will not be enabled.
+         */
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+
+        /*
+         * Finally, let's do a sync to get things started
+         */
+
+        syncImmediately(context);
+    }
+
+
+    public static void initializeSyncAdapter(Context context) {
+        getSyncAccount(context);
+    }
+
     /**
      * Helper method to get the fake account to be used with SyncAdapter, or make a new one
      * if the fake account doesn't exist yet.  If we make a new account, we call the
@@ -133,12 +163,11 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
-        AccountManager accountManager =
-                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        AccountManager accountManager = AccountManager.get(context);
 
         // Create the account type and default account
-        Account newAccount = new Account(
-                "Quizmoo", context.getString(R.string.sync_account_type));
+        Account newAccount = accountManager.getAccountsByType(context.getString(R.string.sync_account_type))[0];
+        Log.v(LOG_TAG,newAccount.name);
 
         // If the password doesn't exist, the account doesn't exist
         if ( null == accountManager.getPassword(newAccount) ) {
@@ -160,29 +189,6 @@ public class QuizmooSyncAdapter extends AbstractThreadedSyncAdapter {
             onAccountCreated(newAccount, context);
         }
         return newAccount;
-    }
-
-
-    private static void onAccountCreated(Account newAccount, Context context) {
-        /*
-         * Since we've created an account
-         */
-        QuizmooSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
-
-        /*
-         * Without calling setSyncAutomatically, our periodic sync will not be enabled.
-         */
-        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
-
-        /*
-         * Finally, let's do a sync to get things started
-         */
-
-        syncImmediately(context);
-    }
-
-    public static void initializeSyncAdapter(Context context) {
-        getSyncAccount(context);
     }
 
 

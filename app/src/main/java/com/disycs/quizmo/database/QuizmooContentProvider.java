@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 import com.disycs.quizmo.database.tables.QuestionnaireTable;
 import com.disycs.quizmo.database.tables.UserTable;
@@ -17,6 +18,7 @@ import com.disycs.quizmo.database.tables.UserTable;
 
 public class QuizmooContentProvider extends ContentProvider {
 
+    private static final String LOG_TAG = QuizmooContentProvider.class.getSimpleName();
     // database
     private QuizmooDataBaseHelper mOpenHelper;
 
@@ -141,4 +143,6 @@ public class QuizmooContentProvider extends ContentProvider {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
+
+
 }

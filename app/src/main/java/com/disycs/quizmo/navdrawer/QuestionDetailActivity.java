@@ -25,7 +25,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import com.disycs.quizmo.model.Questionnaire;
-import com.disycs.quizmo.model.User;
 import com.disycs.quizmo.model.questions.Question;
 import com.disycs.quizmo.model.questions.QuestionFactory;
 import com.disycs.quizmo.model.questions.QuestionMultipleChoice;
@@ -310,7 +309,7 @@ public class QuestionDetailActivity extends FragmentActivity {
 		alertDialog.setPositiveButton(R.string.alertPositiveAnswer, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				User.deleteUser();
+
 				finish();
 			}
 		});

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.disycs.quizmo.database.QuizmooDataBaseHelper.SYNC_STATE;
 import com.disycs.quizmo.model.Questionnaire;
 import com.disycs.quizmo.design.Color;
 import com.disycs.quizmo.design.FontChangeCrawler;
@@ -71,54 +70,6 @@ public class QuestionnaireAdapter extends ArrayAdapter<Questionnaire>{
 		holder.label.setText(context.getResources().getStringArray(R.array.category)
 				[list.get(position).getCategory().ordinal()]);
 		holder.attach.setVisibility(View.GONE);
-		/*if(sync){
-			//TODO
-			MySQLiteHelper db =new  MySQLiteHelper(context);
-			SYNC_STATE syncState = db.getQuestionnaireState(list.get(position));
-			int responses = db.getResponseCount(list.get(position));
-			if(syncState==SYNC_STATE.EXIST_AND_SYNC){
-				holder.attach.setVisibility(View.VISIBLE);
-			}
-			else if(syncState==SYNC_STATE.EXIST){
-				db.updateQuestionnaire(list.get(position));
-			}
-			
-			holder.show_more.setTag(
-					new QuestionnaireViewInformations(list.get(position),
-					syncState,
-					responses));		
-		}else{
-			holder.show_more.setVisibility(View.GONE);
-		}*/
 	}
-	class QuestionnaireViewInformations{
-		Questionnaire Q ;
-		SYNC_STATE syncState;
-		int responses;
-		public QuestionnaireViewInformations(Questionnaire q,
-				SYNC_STATE syncState, int responses) {
-			Q = q;
-			this.syncState = syncState;
-			this.responses = responses;
-		}
-		public Questionnaire getQ() {
-			return Q;
-		}
-		public void setQ(Questionnaire q) {
-			Q = q;
-		}
-		public SYNC_STATE getSyncState() {
-			return syncState;
-		}
-		public void setSyncState(SYNC_STATE syncState) {
-			this.syncState = syncState;
-		}
-		public int getResponses() {
-			return responses;
-		}
-		public void setResponses(int responses) {
-			this.responses = responses;
-		}
-		
-	}
+
 }

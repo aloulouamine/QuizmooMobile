@@ -1,6 +1,5 @@
 package com.disycs.quizmo;
 
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -36,24 +35,18 @@ import android.widget.TextView;
 
 import com.disycs.quizmo.api.HttpProxy;
 import com.disycs.quizmo.database.QuizmooContentProvider;
-import com.disycs.quizmo.database.QuizmooDataBaseHelper.SYNC_STATE;
+
 import com.disycs.quizmo.database.tables.QuestionnaireTable;
 import com.disycs.quizmo.model.Questionnaire;
 import com.disycs.quizmo.model.Questionnaire.CATEGORY;
 import com.disycs.quizmo.model.Questionnaire.STATE;
-import com.disycs.quizmo.model.Token;
-import com.disycs.quizmo.model.User;
-import com.disycs.quizmo.QuestionnaireAdapter.QuestionnaireViewInformations;
+
 import com.disycs.quizmo.design.FontChangeCrawler;
-import com.disycs.quizmo.model.questions.Question;
 import com.disycs.quizmo.navdrawer.QuestionDetailActivity;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -184,7 +177,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             } else {
                 section = STATE.DRAFT.getCode();
             }
-            return PlaceholderFragment.newInstance(getResources().getStringArray(R.array.state)[position], section);
+            return PlaceholderFragment.newInstance(getResources().getStringArray(R.array.state)[position], section,getIntent().getBooleanExtra(MainActivity.FIRST_LOGIN,false));
         }
 
         @Override
@@ -211,42 +204,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         private static final short QUESTIONNAIRE_TABLE_ID = 1;
         private static final String QUESTIONNAIRE_LIST_KEY = "QUESTIONNAIE_LIST";
 
-        class GridLoader extends AsyncTask<Questionnaire, Integer, ArrayList<Questionnaire>> {
-            QuestionnaireAdapter adapter;
-            STATE state;
-            CATEGORY category;
-            ProgressBar pb;
 
-            public GridLoader(QuestionnaireAdapter adapter, STATE state, CATEGORY category, ProgressBar pb) {
-                this.adapter = adapter;
-                this.state = state;
-                this.category = category;
-                this.pb = pb;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                pb.setVisibility(View.VISIBLE);
-            }
-
-
-
-            @Override
-            protected ArrayList<Questionnaire> doInBackground(Questionnaire... params) {
-
-                return HttpProxy.getQuestionnaires(Token.getToken(), state);
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Questionnaire> result) {
-                super.onPostExecute(result);
-
-                //Log.i("Result",""+result.size());
-                adapter.addAll(result);
-                adapter.notifyDataSetChanged();
-                pb.setVisibility(View.GONE);
-            }
-        }
 
         /**
          * The fragment argument representing the section number for this
@@ -258,11 +216,12 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         /**
          * Returns a new instance of this fragment for the given section number.
          */
-        public static PlaceholderFragment newInstance(String sectionType, String sectionName) {
+        public static PlaceholderFragment newInstance(String sectionType, String sectionName , boolean isFistTimeLogging) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putString(ARG_SECTION_TYPE, sectionType);
             args.putString(ARG_SECTION_NAME, sectionName);
+            args.putBoolean(MainActivity.FIRST_LOGIN,isFistTimeLogging);
             fragment.setArguments(args);
             return fragment;
         }
@@ -271,7 +230,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         private List<Questionnaire>mQuestionnairesList;
         private ContentObserver mObserver;
         QuestionnaireAdapter adapter;
-        GridLoader asyncGridLoader;
+
         ProgressBar pb;
         GridView gridView;
         CATEGORY category;
@@ -298,8 +257,10 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             gridView = (GridView) rootView
                     .findViewById(R.id.GRIDquest);
             pb = (ProgressBar) rootView.
-                    findViewById(R.id.progressGrid);
-
+                    findViewById(R.id.questionnaireLoadingPorgressBar);
+            if(getActivity().getIntent().getBooleanExtra(MainActivity.FIRST_LOGIN, false)){
+                pb.setVisibility(View.VISIBLE);
+            }
 
             adapter = new QuestionnaireAdapter(getActivity(), mQuestionnairesList);
             gridView.setAdapter(adapter);
@@ -323,7 +284,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
                 public void onChange(boolean selfChange) {
                     super.onChange(selfChange);
                     Log.v(LOG_TAG, "Observer notified");
-                    
+
                     updateView();
                 }
             };
@@ -332,7 +293,11 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         }
 
         private void updateView() {
+            //mQuestionnairesList= new ArrayList<Questionnaire>();
             mLoaderManager.restartLoader(QUESTIONNAIRE_TABLE_ID,null,this);
+            if(getActivity().getIntent().getBooleanExtra(MainActivity.FIRST_LOGIN,false)){
+                pb.setVisibility(View.GONE);
+            }
         }
 
         @Override
@@ -382,8 +347,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
 
         private Questionnaire createQuestionnaireItem(Cursor data) throws ParseException {
             StringBuilder date =new StringBuilder(data.getString(data.getColumnIndex(QuestionnaireTable.DAT_CR_QUESTIONNAIRE)));
-            date.delete(date.length()-8,date.length());
-            Log.v(LOG_TAG,"date:"+date);
+            date.delete(date.length() - 8, date.length());
             return
                     new Questionnaire(data.getInt(data.getColumnIndex(QuestionnaireTable.ID_QUESTIONNAIRE)),
                             data.getString(data.getColumnIndex(QuestionnaireTable.TITLE_QUESTIONNAIRE)),
@@ -419,7 +383,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         alertDialog.setPositiveButton(R.string.alertPositiveAnswer, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                User.deleteUser();
+
                 finish();
             }
         });
@@ -431,7 +395,6 @@ public class QuestionnairesActivity extends ActionBarActivity implements
     public void showListItemPopup(final View v) {
         PopupMenu popupMenu = new PopupMenu(QuestionnairesActivity.this, v);
         popupMenu.getMenuInflater().inflate(R.menu.item_popup, popupMenu.getMenu());
-        adaptMenu(popupMenu, v);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -474,17 +437,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         }
     }
 
-    private void adaptMenu(PopupMenu popupMenu, View v) {
-        //TODO ADAPT THE MENU TO THE VIEW
-        QuestionnaireViewInformations QVI = (QuestionnaireViewInformations) v.getTag();
-        if (QVI.syncState == SYNC_STATE.DO_NOT_EXIST) {
-            popupMenu.getMenu().findItem(R.id.delete).setVisible(false);
-        } else {
-            popupMenu.getMenu().findItem(R.id.save).setVisible(false);
-        }
-        if (getVisibleFragment().getArguments().getString(PlaceholderFragment.ARG_SECTION_NAME) == STATE.ONGOING.getCode()) {
-        }
-    }
+
 }
 
 

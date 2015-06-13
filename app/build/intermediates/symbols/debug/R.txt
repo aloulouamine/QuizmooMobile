@@ -344,12 +344,12 @@ int id never 0x7f0d0016
 int id none 0x7f0d0012
 int id normal 0x7f0d0007
 int id pager 0x7f0d0046
-int id progressGrid 0x7f0d0051
 int id progress_circular 0x7f0d0004
 int id progress_horizontal 0x7f0d0005
 int id quest_pager 0x7f0d0044
 int id question_layout 0x7f0d004c
 int id question_outer_layout 0x7f0d0047
+int id questionnaireLoadingPorgressBar 0x7f0d0051
 int id radio 0x7f0d002f
 int id radioLayout 0x7f0d0055
 int id radiolayout 0x7f0d0053

@@ -927,12 +927,12 @@ containing a value of this type.
         public static final int none=0x7f0d0012;
         public static final int normal=0x7f0d0007;
         public static final int pager=0x7f0d0046;
-        public static final int progressGrid=0x7f0d0051;
         public static final int progress_circular=0x7f0d0004;
         public static final int progress_horizontal=0x7f0d0005;
         public static final int quest_pager=0x7f0d0044;
         public static final int question_layout=0x7f0d004c;
         public static final int question_outer_layout=0x7f0d0047;
+        public static final int questionnaireLoadingPorgressBar=0x7f0d0051;
         public static final int radio=0x7f0d002f;
         public static final int radioLayout=0x7f0d0055;
         public static final int radiolayout=0x7f0d0053;

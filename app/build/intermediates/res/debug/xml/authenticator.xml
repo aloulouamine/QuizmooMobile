@@ -3,4 +3,5 @@
     android:accountType="@string/sync_account_type"
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
-    android:smallIcon="@drawable/ic_launcher" /><!-- From: file:/home/amine/Bureau/Quizmoo-master1/app/src/main/res/xml/authenticator.xml -->
+    android:smallIcon="@drawable/ic_launcher" />
+<!-- From: file:/home/amine/Bureau/Quizmoo-master1/app/src/main/res/xml/authenticator.xml -->

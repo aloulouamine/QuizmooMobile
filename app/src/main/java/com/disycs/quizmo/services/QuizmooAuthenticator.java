@@ -4,19 +4,16 @@ import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
 import android.accounts.NetworkErrorException;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.disycs.quizmo.MainActivity;
 import com.disycs.quizmo.api.HttpProxy;
-import com.disycs.quizmo.model.Token;
+
 
 /**
  * Manages "Authentication" to Sunshine's backend service.  The SyncAdapter framework
@@ -96,6 +93,7 @@ public class QuizmooAuthenticator extends AbstractAccountAuthenticator {
         if (!TextUtils.isEmpty(authToken)) {
             final Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE,account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
             return result;
         }
@@ -111,9 +109,7 @@ public class QuizmooAuthenticator extends AbstractAccountAuthenticator {
     }
 
     private String userSignIn(String name, String password) {
-        String token;
-        HttpProxy.Authentification(name,password);
-        return Token.getToken().getTokenString();
+        return HttpProxy.Authentification(name, password);
     }
 
     // Getting a label for the auth token is not supported
