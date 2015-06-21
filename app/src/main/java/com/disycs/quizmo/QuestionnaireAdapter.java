@@ -1,9 +1,5 @@
 package com.disycs.quizmo;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -14,22 +10,25 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.disycs.quizmo.model.Questionnaire;
 import com.disycs.quizmo.design.Color;
 import com.disycs.quizmo.design.FontChangeCrawler;
+import com.disycs.quizmo.model.Questionnaire;
+
+import java.util.List;
 
 public class QuestionnaireAdapter extends ArrayAdapter<Questionnaire>{
-	private final List<Questionnaire> list;
-	private final Activity context;
-	
-	private final boolean sync;
-	public QuestionnaireAdapter(Activity context, 
-			List<Questionnaire> list) {
-		super(context,R.layout.questionnaire_item, list);
-		this.context=context;
-		this.list= list;
-		SharedPreferences settings = context.getSharedPreferences("Quizmoo", 0);
-		this.sync=settings.getBoolean("SYNC", true);		
+
+	private final List<Questionnaire> mList;
+	private final Activity mContext;
+	private final boolean mSync;
+
+	public QuestionnaireAdapter(Activity mContext, 
+			List<Questionnaire> mList) {
+		super(mContext,R.layout.questionnaire_item, mList);
+		this.mContext=mContext;
+		this.mList= mList;
+		SharedPreferences settings = mContext.getSharedPreferences("Quizmoo", 0);
+		this.mSync=settings.getBoolean("SYNC", true);		
 	}
 
 	static class ViewHolder{
@@ -41,9 +40,9 @@ public class QuestionnaireAdapter extends ArrayAdapter<Questionnaire>{
 	public View getView(int position , View convertView , ViewGroup parent){
 		View view = null;
 		if (convertView == null){
-			LayoutInflater inflator = context.getLayoutInflater();
+			LayoutInflater inflator = mContext.getLayoutInflater();
 			view = inflator.inflate(R.layout.questionnaire_item, null);
-			FontChangeCrawler fontChanger = new FontChangeCrawler(context.getAssets(), "font/montserratregular.ttf");
+			FontChangeCrawler fontChanger = new FontChangeCrawler(mContext.getAssets(), "font/montserratregular.ttf");
 			fontChanger.replaceFonts((ViewGroup)view);
 			final ViewHolder viewHolder = new ViewHolder();
 			viewHolder.title = (TextView)view.findViewById(R.id.txtapptitle);
@@ -58,17 +57,17 @@ public class QuestionnaireAdapter extends ArrayAdapter<Questionnaire>{
 				view=convertView;
 			}
 		ViewHolder holder= (ViewHolder)view.getTag();
-		updateViewHolder(holder,sync,position);	
+		updateViewHolder(holder,mSync,position);	
 		return view;
 	}
-	private void updateViewHolder(ViewHolder holder,  boolean sync, int position){
-		holder.title.setText(list.get(position).getTitle());
-		holder.description.setText(list.get(position).getDescription());
-		holder.date.setText(list.get(position).getDateOfCreation());
-		holder.label_layout.setBackgroundColor(context.getResources().getColor(Color.color
-				[list.get(position).getCategory().ordinal()]));
-		holder.label.setText(context.getResources().getStringArray(R.array.category)
-				[list.get(position).getCategory().ordinal()]);
+	private void updateViewHolder(ViewHolder holder,  boolean mSync, int position){
+		holder.title.setText(mList.get(position).getTitle());
+		holder.description.setText(mList.get(position).getDescription());
+		holder.date.setText(mList.get(position).getDateOfCreation());
+		holder.label_layout.setBackgroundColor(mContext.getResources().getColor(Color.color
+				[mList.get(position).getCategory().ordinal()]));
+		holder.label.setText(mContext.getResources().getStringArray(R.array.category)
+				[mList.get(position).getCategory().ordinal()]);
 		holder.attach.setVisibility(View.GONE);
 	}
 

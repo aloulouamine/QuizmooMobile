@@ -32,10 +32,10 @@ public class MainActivity extends Activity implements OnClickListener {
 	public static final String FIRST_LOGIN = "first_login";
 
 
-	private ProgressBar loginProgressBar;
-	private EditText txtLogin,txtPwd;
-	private Button BtnLogin;
-	private TextView labelFeedback;
+	private ProgressBar mProgressBar;
+	private EditText mLoginTxt,mPasswordTxt;
+	private Button mButtonLogin;
+	private TextView mLabelFeedback;
 	String mToken;
 
 	private AccountManager mAccountManager;
@@ -71,17 +71,17 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected void onStart() {
 		super.onStart();
 		
-		txtLogin = (EditText)findViewById(R.id.TxtUserName);
+		mLoginTxt = (EditText)findViewById(R.id.TxtUserName);
 		
-		txtPwd = (EditText)findViewById(R.id.TxtPassword);
+		mPasswordTxt = (EditText)findViewById(R.id.TxtPassword);
 		
-		loginProgressBar = (ProgressBar) findViewById(R.id.LoadingBar);
-		loginProgressBar.setVisibility(View.GONE);
-		BtnLogin = (Button)findViewById(R.id.BtnLogin);
+		mProgressBar = (ProgressBar) findViewById(R.id.LoadingBar);
+		mProgressBar.setVisibility(View.GONE);
+		mButtonLogin = (Button)findViewById(R.id.BtnLogin);
 		
-		labelFeedback = (TextView) findViewById(R.id.LabelFeedback);
+		mLabelFeedback = (TextView) findViewById(R.id.LabelFeedback);
 
-		BtnLogin.setOnClickListener(this);
+		mButtonLogin.setOnClickListener(this);
 	}
 
 
@@ -94,15 +94,15 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (view.getId() == R.id.BtnLogin) {
 
 
-			final String userName = txtLogin.getText().toString();
-			final String password = txtPwd.getText().toString();
+			final String userName = mLoginTxt.getText().toString();
+			final String password = mPasswordTxt.getText().toString();
 
 			if (isNetworkAvailable()) {
 				 class LoginAsyncTask extends AsyncTask<Void,Void,Void>{
 					@Override
 					protected void onPreExecute() {
 						super.onPreExecute();
-						loginProgressBar.setVisibility(View.VISIBLE);
+						mProgressBar.setVisibility(View.VISIBLE);
 
 					}
 					@Override
@@ -114,9 +114,9 @@ public class MainActivity extends Activity implements OnClickListener {
 					@Override
 					protected void onPostExecute(Void aVoid) {
 						super.onPostExecute(aVoid);
-						loginProgressBar.setVisibility(View.INVISIBLE);
+						mProgressBar.setVisibility(View.INVISIBLE);
 						if(mToken==null){
-							labelFeedback.setText(getString(R.string.login_failure));
+							mLabelFeedback.setText(getString(R.string.login_failure));
 						}
 						else{
 							final Intent res = new Intent();

@@ -84,12 +84,12 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayHomeAsUpEnabled(false);
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the mAdapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(
                 getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
+        // Set up the ViewPager with the sections mAdapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -108,7 +108,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
+            // the mAdapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
             actionBar.addTab(actionBar.newTab()
@@ -229,12 +229,12 @@ public class QuestionnairesActivity extends ActionBarActivity implements
         private LoaderManager mLoaderManager;
         private List<Questionnaire>mQuestionnairesList;
         private ContentObserver mObserver;
-        QuestionnaireAdapter adapter;
+        QuestionnaireAdapter mAdapter;
 
-        ProgressBar pb;
-        GridView gridView;
-        CATEGORY category;
-        STATE state;
+        ProgressBar mProgressBar;
+        GridView mGridView;
+
+        STATE mState;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -242,7 +242,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             View rootView = inflater.inflate(R.layout.fragment_questionnaires,
                     container, false);
 
-            state = STATE.get(getArguments().getString(ARG_SECTION_NAME));
+            mState = STATE.get(getArguments().getString(ARG_SECTION_NAME));
             mLoaderManager = getLoaderManager();
             if(savedInstanceState ==null){
                 mLoaderManager.initLoader(QUESTIONNAIRE_TABLE_ID,null,this);
@@ -254,17 +254,17 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             }
             TextView textView = (TextView) rootView
                     .findViewById(R.id.section_label);
-            gridView = (GridView) rootView
+            mGridView = (GridView) rootView
                     .findViewById(R.id.GRIDquest);
-            pb = (ProgressBar) rootView.
+            mProgressBar = (ProgressBar) rootView.
                     findViewById(R.id.questionnaireLoadingPorgressBar);
             if(getActivity().getIntent().getBooleanExtra(MainActivity.FIRST_LOGIN, false)){
-                pb.setVisibility(View.VISIBLE);
+                mProgressBar.setVisibility(View.VISIBLE);
             }
 
-            adapter = new QuestionnaireAdapter(getActivity(), mQuestionnairesList);
-            gridView.setAdapter(adapter);
-    		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mAdapter = new QuestionnaireAdapter(getActivity(), mQuestionnairesList);
+            mGridView.setAdapter(mAdapter);
+    		mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> adpt, View view,
@@ -296,7 +296,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             //mQuestionnairesList= new ArrayList<Questionnaire>();
             mLoaderManager.restartLoader(QUESTIONNAIRE_TABLE_ID,null,this);
             if(getActivity().getIntent().getBooleanExtra(MainActivity.FIRST_LOGIN,false)){
-                pb.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
             }
         }
 
@@ -313,7 +313,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
             return new CursorLoader(getActivity().getApplicationContext(), QuizmooContentProvider.QUESTIONNAIRE_CONTENT_URI,
                     QuestionnaireTable.PROJECTION_ALL,
                     QuestionnaireTable.STATE_QUESTIONNAIRE+"=?",
-                    new String[]{state.getCode()},
+                    new String[]{mState.getCode()},
                     null);
         }
 
@@ -335,7 +335,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
                         }
 
                     }
-                    adapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
                 }
 
                 data.close();
@@ -433,7 +433,7 @@ public class QuestionnairesActivity extends ActionBarActivity implements
 
     private void updateAdapter(PlaceholderFragment phf) {
         if (phf != null) {
-            phf.adapter.notifyDataSetChanged();
+            phf.mAdapter.notifyDataSetChanged();
         }
     }
 
