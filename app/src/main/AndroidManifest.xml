@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
         android:allowBackup="true"
@@ -31,21 +31,29 @@
             android:label="@string/title_activity_questionnaires"
             android:parentActivityName="android.app.TabActivity" >
         </activity>
-        <activity android:name=".navdrawer.QuestionDetailActivity" />
+        <activity
+            android:name=".navdrawer.QuestionDetailActivity"
+            android:label="@string/title_question_detail"
+            android:parentActivityName=".navdrawer.QuestionDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.disycs.quizmo.navdrawer.QuestionDetailActivity" />
+        </activity>
 
         <provider
             android:name=".database.QuizmooContentProvider"
             android:authorities="com.disycs"
-            android:syncable="true"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="false"
+            android:syncable="true" >
         </provider>
 
         <!-- SyncAdapter's dummy authentication service -->
-        <service android:name=".services.QuizmooAuthenticatorService">
+        <service android:name=".services.QuizmooAuthenticatorService" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
@@ -54,15 +62,16 @@
         <!-- The SyncAdapter service -->
         <service
             android:name=".services.QuizmooSyncService"
-            android:exported="true"
-            >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
 
 
     </application>

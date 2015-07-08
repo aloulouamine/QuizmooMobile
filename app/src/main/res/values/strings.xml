@@ -52,5 +52,9 @@
     <string name="comment_here">Write your comment here</string>
     <string name="content_authority">com.disycs</string>
     <string name="sync_account_type">com.disycs</string>
+    <string name="title_question_list">Questions</string>
+    <string name="title_question_detail">Question Detail</string>
+    <string name="title_activity_master_detail">Questionnaire</string>
+    <string name="miss_answer_alert">Please answer all questions before you send</string>
 
 </resources>

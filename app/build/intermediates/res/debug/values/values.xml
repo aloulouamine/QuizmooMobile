@@ -222,6 +222,7 @@
     <string name="login_failure">Sorry, check your login informations !</string>
     <string name="logout">Logout</string>
     <string name="logoutMsg">You are about to logout. Confirm ?</string>
+    <string name="miss_answer_alert">Please answer all questions before you send</string>
     <string name="offlineLogin">Trying offline mode ...</string>
     <string name="offlinefailure">Sorry, You may have never connected from this device</string>
     <string name="reset">Reset</string>
@@ -231,7 +232,10 @@
     <string name="submit_answer">Submit Answers</string>
     <string name="sync_account_type">com.disycs</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_master_detail">Questionnaire</string>
     <string name="title_activity_questionnaires">Questionnaires</string>
+    <string name="title_question_detail">Question Detail</string>
+    <string name="title_question_list">Questions</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

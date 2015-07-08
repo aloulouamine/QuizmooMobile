@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,15 +32,12 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.disycs.quizmo.api.HttpProxy;
 import com.disycs.quizmo.database.QuizmooContentProvider;
-
 import com.disycs.quizmo.database.tables.QuestionnaireTable;
+import com.disycs.quizmo.design.FontChangeCrawler;
 import com.disycs.quizmo.model.Questionnaire;
 import com.disycs.quizmo.model.Questionnaire.CATEGORY;
 import com.disycs.quizmo.model.Questionnaire.STATE;
-
-import com.disycs.quizmo.design.FontChangeCrawler;
 import com.disycs.quizmo.navdrawer.QuestionDetailActivity;
 
 import java.io.Serializable;

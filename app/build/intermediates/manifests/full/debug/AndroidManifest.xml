@@ -35,7 +35,14 @@
             android:label="@string/title_activity_questionnaires"
             android:parentActivityName="android.app.TabActivity" >
         </activity>
-        <activity android:name="com.disycs.quizmo.navdrawer.QuestionDetailActivity" />
+        <activity
+            android:name="com.disycs.quizmo.navdrawer.QuestionDetailActivity"
+            android:label="@string/title_question_detail"
+            android:parentActivityName="com.disycs.quizmo.navdrawer.QuestionListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.disycs.quizmo.navdrawer.QuestionListActivity" />
+        </activity>
 
         <provider
             android:name="com.disycs.quizmo.database.QuizmooContentProvider"
@@ -68,6 +75,15 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name="com.disycs.quizmo.navdrawer.QuestionListActivity"
+            android:label="@string/title_question_list" >
+        </activity>
+        <activity
+            android:name="com.disycs.quizmo.masterdetail.MasterDetail"
+            android:label="@string/title_activity_master_detail" >
+        </activity>
     </application>
 
 </manifest>
